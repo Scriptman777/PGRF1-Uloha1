@@ -1,4 +1,6 @@
 import model.Line;
+import model.Point;
+import model.Polygon;
 import rasterize.*;
 
 import javax.swing.*;
@@ -14,17 +16,21 @@ import java.util.List;
  * @version 2020
  */
 
-public class Main {
+public class Main implements ActionListener{
 
 	private JPanel panel;
+	private JRadioButton radioPolygon;
+	private JTextArea areaPolygon;
 	private RasterBufferedImage raster;
 	private int x = -1,y, x2, y2;
 	private FilledLineRasterizer rasterizer;
 	private DashedLineRasterizer dshRasterizer;
 	private DottedLineRasterizer dotRasterizer;
+	private PolygonRasterizer polyRasterizer;
 	private List<Line> lines = new ArrayList<Line>();
 	private List<Line> dashedLines = new ArrayList<Line>();
 	private List<Line> dottedLines = new ArrayList<Line>();
+	private List<Polygon> polygons = new ArrayList<Polygon>();
 
 
 	public Main(int width, int height) {
@@ -40,6 +46,7 @@ public class Main {
 		rasterizer = new FilledLineRasterizer(raster);
 		dshRasterizer = new DashedLineRasterizer(raster);
 		dotRasterizer = new DottedLineRasterizer(raster);
+		polyRasterizer = new PolygonRasterizer(raster);
 
 		panel = new JPanel() {
 			private static final long serialVersionUID = 1L;
@@ -68,8 +75,14 @@ public class Main {
 		JRadioButton radioDashed = new JRadioButton("Dashed line");
 		selector.add(radioDashed);
 
-		JRadioButton radioPolygon = new JRadioButton("Polygon");
+		radioPolygon = new JRadioButton("Polygon");
+		radioPolygon.addActionListener(this);
 		selector.add(radioPolygon);
+
+		areaPolygon = new JTextArea(20, 5);
+		selector.add(areaPolygon);
+
+
 
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(radioDotted);
@@ -116,6 +129,15 @@ public class Main {
 						//Nastavení x na nesmyslnou hodnotu, aby bylo možné kreslit novou čáru
 						x = -1;
 					}
+				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON1)
+				{
+					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
+					areaPolygon.append("[" + e.getX() + "," + e.getY() + "] \n");
+				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON3)
+				{
+					redrawAll();
+					//polygons.add(new Polygon());
+
 				}
 
 
@@ -167,6 +189,9 @@ public class Main {
 		for (Line dtt: dottedLines) {
 			dotRasterizer.line(dtt.getX1(),dtt.getY1(),dtt.getX2(),dtt.getY2());
 		}
+		for (Polygon pll: polygons) {
+			polyRasterizer.drawPolygon(pll);
+		}
 
 
 		panel.repaint();
@@ -198,4 +223,15 @@ public class Main {
 		SwingUtilities.invokeLater(() -> new Main(800, 600).start());
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent actionEvent) {
+		if (actionEvent.getSource() == radioPolygon)
+		{
+			polygons.add(new Polygon());
+			areaPolygon.setText("");
+
+
+		}
+
+	}
 }
