@@ -21,8 +21,10 @@ public class Main {
 	private int x = -1,y, x2, y2;
 	private FilledLineRasterizer rasterizer;
 	private DashedLineRasterizer dshRasterizer;
+	private DottedLineRasterizer dotRasterizer;
 	private List<Line> lines = new ArrayList<Line>();
 	private List<Line> dashedLines = new ArrayList<Line>();
+	private List<Line> dottedLines = new ArrayList<Line>();
 
 
 	public Main(int width, int height) {
@@ -37,6 +39,8 @@ public class Main {
 		raster = new RasterBufferedImage(width, height);
 		rasterizer = new FilledLineRasterizer(raster);
 		dshRasterizer = new DashedLineRasterizer(raster);
+		dotRasterizer = new DottedLineRasterizer(raster);
+
 		panel = new JPanel() {
 			private static final long serialVersionUID = 1L;
 
@@ -58,6 +62,9 @@ public class Main {
 		JRadioButton radioLine = new JRadioButton("Line");
 		selector.add(radioLine);
 
+		JRadioButton radioDotted = new JRadioButton("Dotted line");
+		selector.add(radioDotted);
+
 		JRadioButton radioDashed = new JRadioButton("Dashed line");
 		selector.add(radioDashed);
 
@@ -65,6 +72,7 @@ public class Main {
 		selector.add(radioPolygon);
 
 		ButtonGroup bg = new ButtonGroup();
+		bg.add(radioDotted);
 		bg.add(radioDashed);
 		bg.add(radioLine);
 		bg.add(radioPolygon);
@@ -81,7 +89,7 @@ public class Main {
 			@Override
 			public void mousePressed(MouseEvent e) {
 
-				if (radioLine.isSelected() || radioDashed.isSelected())
+				if (radioLine.isSelected() || radioDashed.isSelected() || radioDotted.isSelected())
 				{
 					if (x == -1) {
 						x = e.getX();
@@ -99,6 +107,10 @@ public class Main {
 						if (radioDashed.isSelected())
 						{
 							dashedLines.add(ln);
+						}
+						if (radioDotted.isSelected())
+						{
+							dottedLines.add(ln);
 						}
 						redrawAll();
 						//Nastavení x na nesmyslnou hodnotu, aby bylo možné kreslit novou čáru
@@ -151,6 +163,9 @@ public class Main {
 		}
 		for (Line dsh: dashedLines) {
 		dshRasterizer.line(dsh.getX1(),dsh.getY1(),dsh.getX2(),dsh.getY2());
+		}
+		for (Line dtt: dottedLines) {
+			dotRasterizer.line(dtt.getX1(),dtt.getY1(),dtt.getX2(),dtt.getY2());
 		}
 
 
