@@ -133,6 +133,7 @@ public class Main implements ActionListener{
 				{
 					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
 					areaPolygon.append("[" + e.getX() + "," + e.getY() + "] \n");
+					raster.setPixel(e.getX(),e.getY(),0xffff00);
 				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON3)
 				{
 					redrawAll();
