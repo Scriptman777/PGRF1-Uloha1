@@ -149,11 +149,17 @@ public class Main implements ActionListener{
 					}
 				}
 
+				if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON3) {
+					//Ukončení kreslení polygonu, začátek nového
+					stageNewPolygon();
+
+				}
+
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (radioPolygon.isSelected())
+				if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON1)
 				{
 					//Přidání nového bodu do polygonu
 					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
@@ -232,8 +238,8 @@ public class Main implements ActionListener{
 	public void clear(int color) {
 		raster.setClearColor(color);
 		raster.clear();
-		
 	}
+
 
 	public void present(Graphics graphics) {
 		raster.repaint(graphics);
@@ -266,13 +272,27 @@ public class Main implements ActionListener{
 		SwingUtilities.invokeLater(() -> new Main(800, 600).start());
 	}
 
+	public void stageNewPolygon() {
+		/*
+		Podmínka zajišťující, aby nebylo možné vytvořit mnoho "prázdných" polygonů s 0 body. Vždy májí alespoň 1
+		Polygon se vytvoří vždy pokud žádný ještě neexistuje (po spuštění nebo vymazání)
+		*/
+		if (polygons.size() == 0 || polygons.get(polygons.size()-1).points.size()>0)
+		{
+			polygons.add(new Polygon());
+			areaPolygon.setText("");
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent actionEvent) {
 		if (actionEvent.getSource() == radioPolygon)
 		{
 			//Vytvoření nového polygonu když uživatel chce začít kreslit polygon
-			polygons.add(new Polygon());
-			areaPolygon.setText("");
+			stageNewPolygon();
+
+
+
 		}
 
 	}
