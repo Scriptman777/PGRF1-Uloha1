@@ -14,6 +14,7 @@ public class PolygonRasterizer{
         this.raster = raster;
     }
 
+    //Vykreslí čáry ze kterých se polygon skládá
     public void drawPolygon(Polygon poly) {
         Point first = poly.points.get(0);
         FilledLineRasterizer fll = new FilledLineRasterizer(raster);

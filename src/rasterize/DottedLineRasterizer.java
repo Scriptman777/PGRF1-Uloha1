@@ -13,6 +13,10 @@ public class DottedLineRasterizer extends LineRasterizer {
         midx = (x1 + x2) / 2;
         midy = (y1 + y2) / 2;
 
+        /*
+        Algoritmus Midpoint je ideální pro kreslení tečkované čáry, stačí zvětšit mezeru mezi body
+         */
+
         raster.setPixel(midx, midy, 0xffff00);
 
         if ((Math.abs(x1 - midx) > 5) || (Math.abs(y1 - midy) > 5)) {

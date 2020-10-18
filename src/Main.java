@@ -18,7 +18,8 @@ import java.util.List;
 
 public class Main implements ActionListener{
 
-	private class MyDispatcher implements KeyEventDispatcher {
+	//Dispatcher pro
+	private class DeleteDispatcher implements KeyEventDispatcher {
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyChar() == 'c') {
@@ -45,8 +46,9 @@ public class Main implements ActionListener{
 
 	public Main(int width, int height) {
 
+		//Detekce zmáčknutí klávesy
 		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-		manager.addKeyEventDispatcher(new MyDispatcher());
+		manager.addKeyEventDispatcher(new DeleteDispatcher());
 
 		JFrame frame = new JFrame();
 
@@ -56,6 +58,7 @@ public class Main implements ActionListener{
 		frame.setResizable(true);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
+		//Rasterizery
 		raster = new RasterBufferedImage(width, height);
 		rasterizer = new FilledLineRasterizer(raster);
 		dshRasterizer = new DashedLineRasterizer(raster);
@@ -98,7 +101,7 @@ public class Main implements ActionListener{
 		selector.add(areaPolygon);
 
 
-
+		//Group pro radio tlačítka
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(radioDotted);
 		bg.add(radioDashed);
@@ -152,6 +155,7 @@ public class Main implements ActionListener{
 			public void mouseReleased(MouseEvent e) {
 				if (radioPolygon.isSelected())
 				{
+					//Přidání nového bodu do polygonu
 					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
 					areaPolygon.append("[" + e.getX() + "," + e.getY() + "] \n");
 					raster.setPixel(e.getX(),e.getY(),0xffff00);
@@ -166,13 +170,13 @@ public class Main implements ActionListener{
 			@Override
 			public void mouseDragged(MouseEvent e) {
 
+				//Vykreslování pružné čáry
 				if (radioPolygon.isSelected()) {
 					int endX = e.getX();
 					int endY = e.getY();
 					drawDynamicLine(endX,endY);
 				}
 			}
-
 
 
 		});
@@ -196,6 +200,7 @@ public class Main implements ActionListener{
 	}
 
 	public void redrawAll() {
+		//Metoda pro vykreslení všech uložených struktur
 		clear(0x222222);
 		for (Line ln:lines){
 		rasterizer.line(ln.getX1(),ln.getY1(),ln.getX2(),ln.getY2());
@@ -213,6 +218,7 @@ public class Main implements ActionListener{
 	}
 
 	public void drawDynamicLine(int endX, int endY) {
+		//Vykresluje čáru při tažení
 		Point polyPoint = polygons.get(polygons.size()-1).getLastPoint();
 		if (polyPoint != null)
 		{
@@ -248,6 +254,7 @@ public class Main implements ActionListener{
 		polygons.clear();
 		if (radioPolygon.isSelected())
 		{
+			//Přidání nového polygonu aby bylo kam ukládat nové body
 			polygons.add(new Polygon());
 		}
 		panel.repaint();
@@ -263,6 +270,7 @@ public class Main implements ActionListener{
 	public void actionPerformed(ActionEvent actionEvent) {
 		if (actionEvent.getSource() == radioPolygon)
 		{
+			//Vytvoření nového polygonu když uživatel chce začít kreslit polygon
 			polygons.add(new Polygon());
 			areaPolygon.setText("");
 		}
