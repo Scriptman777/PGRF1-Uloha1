@@ -18,6 +18,17 @@ import java.util.List;
 
 public class Main implements ActionListener{
 
+	private class MyDispatcher implements KeyEventDispatcher {
+		@Override
+		public boolean dispatchKeyEvent(KeyEvent e) {
+			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyChar() == 'c') {
+				System.out.println("AAAAAa");
+				clearAll();
+			}
+			return false;
+		}
+	}
+
 	private JPanel panel;
 	private JRadioButton radioPolygon;
 	private JTextArea areaPolygon;
@@ -34,6 +45,10 @@ public class Main implements ActionListener{
 
 
 	public Main(int width, int height) {
+
+		KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+		manager.addKeyEventDispatcher(new MyDispatcher());
+
 		JFrame frame = new JFrame();
 
 		frame.setLayout(new BorderLayout());
@@ -58,6 +73,7 @@ public class Main implements ActionListener{
 			}
 		};
 		panel.setPreferredSize(new Dimension(width, height));
+
 
 		frame.add(panel, BorderLayout.CENTER);
 
@@ -134,11 +150,10 @@ public class Main implements ActionListener{
 					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
 					areaPolygon.append("[" + e.getX() + "," + e.getY() + "] \n");
 					raster.setPixel(e.getX(),e.getY(),0xffff00);
+					redrawAll();
 				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON3)
 				{
 					redrawAll();
-					//polygons.add(new Polygon());
-
 				}
 
 
@@ -181,6 +196,7 @@ public class Main implements ActionListener{
 	}
 
 	public void redrawAll(){
+		clear(0x222222);
 		for (Line ln:lines){
 		rasterizer.line(ln.getX1(),ln.getY1(),ln.getX2(),ln.getY2());
 		}
@@ -220,6 +236,22 @@ public class Main implements ActionListener{
 		panel.repaint();
 	}
 
+	public void clearAll()
+	{
+		clear(0x222222);
+		lines.clear();
+		dottedLines.clear();
+		dashedLines.clear();
+		polygons.clear();
+		if (radioPolygon.isSelected())
+		{
+			polygons.add(new Polygon());
+		}
+		panel.repaint();
+		areaPolygon.setText("");
+
+	}
+
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> new Main(800, 600).start());
 	}
@@ -230,8 +262,6 @@ public class Main implements ActionListener{
 		{
 			polygons.add(new Polygon());
 			areaPolygon.setText("");
-
-
 		}
 
 	}
