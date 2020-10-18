@@ -22,7 +22,6 @@ public class Main implements ActionListener{
 		@Override
 		public boolean dispatchKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyChar() == 'c') {
-				System.out.println("AAAAAa");
 				clearAll();
 			}
 			return false;
@@ -145,36 +144,37 @@ public class Main implements ActionListener{
 						//Nastavení x na nesmyslnou hodnotu, aby bylo možné kreslit novou čáru
 						x = -1;
 					}
-				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON1)
+				}
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (radioPolygon.isSelected())
 				{
 					polygons.get(polygons.size() - 1).points.add(new Point(e.getX(),e.getY()));
 					areaPolygon.append("[" + e.getX() + "," + e.getY() + "] \n");
 					raster.setPixel(e.getX(),e.getY(),0xffff00);
 					redrawAll();
-				} else if (radioPolygon.isSelected() && e.getButton() == MouseEvent.BUTTON3)
-				{
-					redrawAll();
 				}
 
-
-
-
-
 			}
+
 		});
 
 		panel.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
-			public void mouseMoved(MouseEvent e) {
-				/*
-				x2 = e.getX();
-				y2 = e.getY();
+			public void mouseDragged(MouseEvent e) {
 
-
-				draw();
-
-				 */
+				if (radioPolygon.isSelected()) {
+					int endX = e.getX();
+					int endY = e.getY();
+					drawDynamicLine(endX,endY);
+				}
 			}
+
+
+
 		});
 
 		panel.addComponentListener(new ComponentAdapter() {
@@ -195,7 +195,7 @@ public class Main implements ActionListener{
 
 	}
 
-	public void redrawAll(){
+	public void redrawAll() {
 		clear(0x222222);
 		for (Line ln:lines){
 		rasterizer.line(ln.getX1(),ln.getY1(),ln.getX2(),ln.getY2());
@@ -209,16 +209,19 @@ public class Main implements ActionListener{
 		for (Polygon pll: polygons) {
 			polyRasterizer.drawPolygon(pll);
 		}
-
-
 		panel.repaint();
 	}
 
-	public void draw(){
+	public void drawDynamicLine(int endX, int endY) {
+		Point polyPoint = polygons.get(polygons.size()-1).getLastPoint();
+		if (polyPoint != null)
+		{
+			clear(0x222222);
+			redrawAll();
+			rasterizer.line(polyPoint.x,polyPoint.y,endX,endY);
+			panel.repaint();
+		}
 
-		clear(0x222222);
-		rasterizer.line(x,y,x2,y2);
-		panel.repaint();
 	}
 	public void clear(int color) {
 		raster.setClearColor(color);

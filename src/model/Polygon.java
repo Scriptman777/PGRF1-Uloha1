@@ -11,5 +11,19 @@ public class Polygon {
         points = new ArrayList<Point>();
     }
 
+    public Point getLastPoint()
+    {
+        if (points.size() > 0)
+        {
+            return points.get(points.size()-1);
+        }
+        else
+        {
+            return null;
+        }
+
+
+    }
+
 
 }
